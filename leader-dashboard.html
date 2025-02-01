@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Lider Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/courses.js" defer></script>
+</head>
+<body>
+  <h1>Kurs Duyuruları</h1>
+  <div id="courses-list">
+    <!-- Mevcut kurs duyuruları burada listelenecek -->
+  </div>
+  <h2>Yeni Kurs Duyurusu Ekle</h2>
+  <form id="new-course-form">
+    <label>Kurs Adı: <input type="text" id="course-name" required></label><br>
+    <label>Açıklama: <textarea id="course-description" required></textarea></label><br>
+    <button type="submit">Duyuru Ekle</button>
+  </form>
+  <div id="course-message"></div>
+</body>
+</html>
