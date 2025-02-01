@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Üyelik Başvurusu</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Firebase SDK'larını ekleyin -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js" defer></script>
+</head>
+<body>
+  <h1>Gençlik Merkezi Üyelik Başvurusu</h1>
+  <form id="signup-form">
+    <label>Adınız Soyadınız: <input type="text" id="fullname" required></label><br>
+    <label>T.C. Kimlik No: <input type="text" id="tcNo" required></label><br>
+    <label>Doğum Tarihi: <input type="date" id="birthDate" required></label><br>
+    <label>İkametgah Adresi: <input type="text" id="address" required></label><br>
+    <label>Email: <input type="email" id="email" required></label><br>
+    <label>Şifre: <input type="password" id="password" required></label><br>
+    <button type="submit">Kayıt Ol</button>
+  </form>
+  <p>Zaten üye misiniz? <a href="login.html">Giriş Yapın</a></p>
+  <div id="signup-message"></div>
+</body>
+</html>
