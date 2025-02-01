@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kurs Başvurusu</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/courses.js" defer></script>
+</head>
+<body>
+  <h1>Kurs Başvuruları</h1>
+  <div id="courses-list">
+    <!-- Kurslar listelenecek -->
+  </div>
+  <h2>Kursa Başvur</h2>
+  <form id="course-apply-form">
+    <label>Kurs Seçin:
+      <select id="selected-course" required>
+        <!-- Kurslar dropdown'a eklenecek -->
+      </select>
+    </label><br>
+    <button type="submit">Başvur</button>
+  </form>
+  <div id="apply-message"></div>
+  <script>
+    // Kurs listesini dropdown'a eklemek ve başvuru işlemleri
+    const courseApplyForm = document.getElementById("course-apply-form");
+    const selectedCourse = document.getElementById("selected-course");
+    const applyMessage = document.getElementById("apply-message");
+
+    // Kursları Firestore’dan çek ve dropdown'ı doldur
+    db.collection("courses").orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        selectedCourse.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const course = doc.data();
+          const option = document.createElement("option");
+          option.value = doc.id;
+          option.text = course.name;
+          selectedCourse.appendChild(option);
+        });
+      });
+
+    // Kurs başvuru işlemi
+    courseApplyForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      // Giriş yapmış kullanıcı bilgisini al (kullanıcı kimliği: uid)
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        applyMessage.innerText = "Lütfen giriş yapın.";
+        return;
+      }
+      const courseId = selectedCourse.value;
+      // Başvuruyu Firestore’da "applications" koleksiyonuna ekle
+      db.collection("applications").add({
+        userId: user.uid,
+        courseId: courseId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        applyMessage.innerText = "Kursa başvurunuz alındı!";
+      })
+      .catch((error) => {
+        applyMessage.innerText = "Hata: " + error.message;
+      });
+    });
+  </script>
+</body>
+</html>
