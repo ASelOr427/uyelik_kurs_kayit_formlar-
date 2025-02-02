@@ -2,9 +2,13 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Üyelik Başvurusu</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- CSS Dosyanızı Dahil Edin -->
   <link rel="stylesheet" href="css/styles.css">
-  <!-- Firebase SDK'larını ekleyin -->
+  <!-- Firebase SDK ve Diğer Scriptler (Önceden eklenmiş firebase-config.js ve auth.js dosyalarınız) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -12,17 +16,106 @@
   <script src="js/auth.js" defer></script>
 </head>
 <body>
-  <h1>Gençlik Merkezi Üyelik Başvurusu</h1>
-  <form id="signup-form">
-    <label>Adınız Soyadınız: <input type="text" id="fullname" required></label><br>
-    <label>T.C. Kimlik No: <input type="text" id="tcNo" required></label><br>
-    <label>Doğum Tarihi: <input type="date" id="birthDate" required></label><br>
-    <label>İkametgah Adresi: <input type="text" id="address" required></label><br>
-    <label>Email: <input type="email" id="email" required></label><br>
-    <label>Şifre: <input type="password" id="password" required></label><br>
-    <button type="submit">Kayıt Ol</button>
-  </form>
-  <p>Zaten üye misiniz? <a href="login.html">Giriş Yapın</a></p>
-  <div id="signup-message"></div>
+  <div class="container fade-in">
+    <h1>Gençlik Merkezi Üyelik Başvurusu</h1>
+    <form id="signup-form">
+      <div class="form-group">
+        <label for="email">E-posta Adresiniz</label>
+        <input type="email" id="email" placeholder="ornek@domain.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="tcNo">T.C. Kimlik Numarası</label>
+        <input type="text" id="tcNo" placeholder="TC Kimlik Numaranız" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="fullname">Adınız Soyadınız</label>
+        <input type="text" id="fullname" placeholder="Adınız Soyadınız" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="birthPlace">Doğum Yeriniz <span class="optional">(Opsiyonel)</span></label>
+        <input type="text" id="birthPlace" placeholder="Doğum Yeriniz">
+      </div>
+      
+      <div class="form-group">
+        <label for="birthDate">Doğum Tarihiniz</label>
+        <input type="date" id="birthDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="educationLevel">Öğrenim Durumunuz</label>
+        <select id="educationLevel" required>
+          <option value="" disabled selected>Seçiniz</option>
+          <option value="ilkogretim">İlköğretim</option>
+          <option value="lise">Lise</option>
+          <option value="universite">Üniversite</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="schoolName">Okulun Adı <span class="optional">(Opsiyonel)</span></label>
+        <input type="text" id="schoolName" placeholder="Okulunuzun adı">
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Cep Telefonunuz</label>
+        <input type="tel" id="phone" placeholder="5xx xxx xx xx" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="address">İkametgah Adresiniz <span class="optional">(Opsiyonel)</span></label>
+        <input type="text" id="address" placeholder="Adresiniz">
+      </div>
+      
+      <!-- 18 yaş altı kontrolü yapılacak. JS ile doğum tarihine göre hesaplanıp bu bölüm gösterilebilir. -->
+      <div id="guardian-approval" class="form-group hidden">
+        <label>
+          <input type="checkbox" id="guardianConsent">
+          Veli Onayı ve E-İmza (18 yaş altı için zorunludur)
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="kvkkConsent" required>
+          KVKK Aydınlatma Metni'ni okudum, <a href="#" target="_blank">detaylar</a> ile onaylıyorum.
+        </label>
+      </div>
+      
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="kvkkApproval" required>
+          KVKK Açık Rıza Beyanını kabul ediyorum.
+        </label>
+      </div>
+      
+      <button type="submit" class="btn">Kayıt Ol</button>
+    </form>
+    <p class="login-link">Zaten üye misiniz? <a href="login.html">Giriş Yapın</a></p>
+    <div id="signup-message"></div>
+  </div>
+
+  <!-- Basit geçiş ve animasyon scriptleri (isteğe bağlı eklenebilir) -->
+  <script>
+    // Örnek: Doğum Tarihi seçildiğinde 18 yaş altı kontrolü
+    document.getElementById('birthDate').addEventListener('change', function() {
+      const birthDate = new Date(this.value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      const guardianApproval = document.getElementById('guardian-approval');
+      if(age < 18) {
+        guardianApproval.classList.remove('hidden');
+        // Varsa ek validasyon ekleyebilirsiniz
+      } else {
+        guardianApproval.classList.add('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
