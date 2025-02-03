@@ -17,7 +17,6 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-// Firebase'i başlat
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const database = getDatabase(app);
