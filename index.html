@@ -94,90 +94,92 @@
   </div>
 
   <script type="module">
-    // Tüm kodun DOM yüklendikten sonra çalışması için
-    
-    import { auth, db } from "./js/firebase-config.js";
-    document.addEventListener("DOMContentLoaded", function() {
-      const birthDateInput = document.getElementById('birthDate');
-      const ageMessage = document.getElementById('age-message');
-      const signupForm = document.getElementById("signup-form");
-      const signupMessage = document.getElementById("signup-message");
+  // Firebase yapılandırma dosyasından auth ve db'yi içe aktar
+  import { auth, db } from "./js/firebase-config.js";
+  // createUserWithEmailAndPassword fonksiyonunu içe aktar
+  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
-      // Fonksiyon: Yaşı hesapla
-      function calculateAge(birthDateStr) {
-        const birthDate = new Date(birthDateStr);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-        return age;
+  document.addEventListener("DOMContentLoaded", function() {
+    const birthDateInput = document.getElementById('birthDate');
+    const ageMessage = document.getElementById('age-message');
+    const signupForm = document.getElementById("signup-form");
+    const signupMessage = document.getElementById("signup-message");
+
+    // Fonksiyon: Yaşı hesapla
+    function calculateAge(birthDateStr) {
+      const birthDate = new Date(birthDateStr);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+
+    // Doğum tarihi değiştiğinde yaş hesaplamasını yap ve uyarıyı güncelle
+    birthDateInput.addEventListener('input', function() {
+      const age = calculateAge(this.value);
+      if (this.value === "") {
+        ageMessage.innerText = "";
+        return;
+      }
+      if (age < 7 || age > 29) {
+        ageMessage.innerText = "Yaşınız 7 ila 29 arasında olmalıdır.";
+      } else {
+        ageMessage.innerText = "";
+      }
+    });
+
+    // Kayıt formu gönderim işlemi
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Form verilerini al
+      const email = document.getElementById("email").value;
+      const tcNo = document.getElementById("tcNo").value; // Şifre olarak kullanılacak
+      const fullname = document.getElementById("fullname").value;
+      const birthPlace = document.getElementById("birthPlace").value;
+      const birthDateStr = birthDateInput.value;
+      const educationLevel = document.getElementById("educationLevel").value;
+      const schoolName = document.getElementById("schoolName").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+
+      // Yaş hesaplama
+      const age = calculateAge(birthDateStr);
+      if (age < 7 || age > 29) {
+        signupMessage.innerText = "Kayıt olabilmek için yaşınız 7 ile 29 arasında olmalıdır.";
+        return;
       }
 
-      // Doğum tarihi değiştiğinde yaş hesaplamasını yap ve uyarıyı güncelle
-      birthDateInput.addEventListener('input', function() {
-        const age = calculateAge(this.value);
-        if (this.value === "") {
-          ageMessage.innerText = "";
-          return;
-        }
-        if (age < 7 || age > 29) {
-          ageMessage.innerText = "Yaşınız 7 ila 29 arasında olmalıdır.";
-        } else {
-          ageMessage.innerText = "";
-        }
-      });
-
-      // Kayıt formu gönderim işlemi
-      signupForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        // Form verilerini al
-        const email = document.getElementById("email").value;
-        const tcNo = document.getElementById("tcNo").value; // Şifre olarak kullanılacak
-        const fullname = document.getElementById("fullname").value;
-        const birthPlace = document.getElementById("birthPlace").value;
-        const birthDateStr = birthDateInput.value;
-        const educationLevel = document.getElementById("educationLevel").value;
-        const schoolName = document.getElementById("schoolName").value;
-        const phone = document.getElementById("phone").value;
-        const address = document.getElementById("address").value;
-
-        // Yaş hesaplama
-        const age = calculateAge(birthDateStr);
-        if (age < 7 || age > 29) {
-          signupMessage.innerText = "Kayıt olabilmek için yaşınız 7 ile 29 arasında olmalıdır.";
-          return;
-        }
-
-        // Firebase Authentication'a kullanıcı ekle (şifre olarak tcNo kullanılıyor)
-        auth.createUserWithEmailAndPassword(email, tcNo)
-          .then((cred) => {
-            // Kullanıcı oluşturulduktan sonra ek bilgileri Firestore'a kaydet
-            return db.collection("users").doc(cred.user.uid).set({
-              email: email,
-              tcNo: tcNo,
-              fullname: fullname,
-              birthPlace: birthPlace,
-              birthDate: birthDateStr,
-              educationLevel: educationLevel,
-              schoolName: schoolName,
-              phone: phone,
-              address: address,
-              role: "member"
-            });
-          })
-          .then(() => {
-            signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
-            signupForm.reset();
-            ageMessage.innerText = "";
-          })
-          .catch((error) => {
-            signupMessage.innerText = "Hata: " + error.message;
+      // Firebase Authentication ile kullanıcı ekle (şifre olarak tcNo kullanılıyor)
+      createUserWithEmailAndPassword(auth, email, tcNo)
+        .then((cred) => {
+          // Kullanıcı oluşturulduktan sonra ek bilgileri Firestore'a kaydet
+          return db.collection("users").doc(cred.user.uid).set({
+            email: email,
+            tcNo: tcNo,
+            fullname: fullname,
+            birthPlace: birthPlace,
+            birthDate: birthDateStr,
+            educationLevel: educationLevel,
+            schoolName: schoolName,
+            phone: phone,
+            address: address,
+            role: "member"
           });
-      });
+        })
+        .then(() => {
+          signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
+          signupForm.reset();
+          ageMessage.innerText = "";
+        })
+        .catch((error) => {
+          signupMessage.innerText = "Hata: " + error.message;
+        });
     });
-  </script>
+  });
+</script>
 </body>
 </html>
