@@ -8,13 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <!-- CSS Dosyası -->
   <link rel="stylesheet" href="css/styles.css">
-  <!-- Firebase SDK'ları -->
-  <script src="https://www.gstatic.com/firebasejs/11.2.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.2.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore-compat.js"></script>
   <!-- Firebase yapılandırma (firebase-config.js) -->
   <script type="module" src="js/firebase-config.js"></script>
-  <script import { auth,db } from "js/firebase-config.js"></script>
 </head>
 <body>
   <div class="container fade-in">
@@ -98,8 +93,10 @@
     <div id="signup-message"></div>
   </div>
 
-  <script>
+  <script type="module">
     // Tüm kodun DOM yüklendikten sonra çalışması için
+    
+    import { auth, db } from "./js/firebase-config.js";
     document.addEventListener("DOMContentLoaded", function() {
       const birthDateInput = document.getElementById('birthDate');
       const ageMessage = document.getElementById('age-message');
