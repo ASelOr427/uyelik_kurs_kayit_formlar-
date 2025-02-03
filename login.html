@@ -8,56 +8,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <!-- CSS Dosyası -->
   <link rel="stylesheet" href="css/styles.css">
-  <!-- Firebase SDK'lar -->
+  <!-- Firebase SDK'ları -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <!-- Firebase yapılandırma -->
+  <!-- Firebase yapılandırma (firebase-config.js) -->
   <script src="js/firebase-config.js"></script>
-  <!-- Özel Giriş İşlemleri -->
-  <script defer>
-    document.addEventListener("DOMContentLoaded", () => {
-      const loginForm = document.getElementById("login-form");
-      const loginMessage = document.getElementById("login-message");
-
-      if (loginForm) {
-        loginForm.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const email = document.getElementById("login-email").value;
-          const tcNo = document.getElementById("login-tcNo").value;
-
-          // Firestore üzerinden kullanıcının email ve TC kimlik numarası ile sorgulanması
-          db.collection("users")
-            .where("email", "==", email)
-            .where("tcNo", "==", tcNo)
-            .where("role", "==", "member") // Üye için sorgulama
-            .get()
-            .then(querySnapshot => {
-              if (querySnapshot.empty) {
-                loginMessage.innerText = "Kullanıcı bulunamadı veya bilgiler yanlış.";
-              } else {
-                loginMessage.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
-                // Giriş başarılı olduğunda kurs başvuru ekranına yönlendirme (örnek)
-                setTimeout(() => {
-                  window.location.href = "course-apply.html";
-                }, 1500);
-              }
-            })
-            .catch(error => {
-              loginMessage.innerText = "Hata: " + error.message;
-            });
-        });
-      }
-    });
-  </script>
 </head>
 <body>
   <div class="container fade-in">
     <h1>Üye Girişi</h1>
     <form id="login-form">
+      <!-- E-posta -->
       <div class="form-group">
         <label for="login-email">E-posta Adresiniz</label>
         <input type="email" id="login-email" placeholder="ornek@domain.com" required>
       </div>
+      <!-- T.C. Kimlik Numarası (şifre olarak kullanılacak) -->
       <div class="form-group">
         <label for="login-tcNo">T.C. Kimlik Numarası</label>
         <input type="text" id="login-tcNo" placeholder="TC Kimlik Numaranız" required>
@@ -67,5 +34,44 @@
     <div id="login-message"></div>
     <p class="signup-link">Henüz üye değil misiniz? <a href="index.html">Kayıt Olun</a></p>
   </div>
+
+  <script>
+    const loginForm = document.getElementById("login-form");
+    const loginMessage = document.getElementById("login-message");
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value;
+        const tcNo = document.getElementById("login-tcNo").value;
+
+        // Firebase Authentication üzerinden giriş yap (şifre olarak tcNo kullanılıyor)
+        auth.signInWithEmailAndPassword(email, tcNo)
+          .then((cred) => {
+            // Giriş başarılı, şimdi Firestore'dan kullanıcının rolünü kontrol ediyoruz.
+            return db.collection("users").doc(cred.user.uid).get();
+          })
+          .then((doc) => {
+            if (doc.exists) {
+              const role = doc.data().role;
+              if (role === "member") {
+                loginMessage.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                setTimeout(() => {
+                  window.location.href = "course-apply.html";
+                }, 1500);
+              } else {
+                loginMessage.innerText = "Giriş yetkiniz bulunmamaktadır.";
+                auth.signOut();
+              }
+            } else {
+              loginMessage.innerText = "Kullanıcı bilgileri bulunamadı.";
+            }
+          })
+          .catch((error) => {
+            loginMessage.innerText = "Hata: " + error.message;
+          });
+      });
+    }
+  </script>
 </body>
 </html>
