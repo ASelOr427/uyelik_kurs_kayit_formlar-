@@ -95,9 +95,7 @@
 
   <script type="module">
   // Firebase yapılandırma dosyasından auth ve db'yi içe aktar
-  import { auth, db } from "./js/firebase-config.js";
-  // createUserWithEmailAndPassword fonksiyonunu içe aktar
-  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+  import { auth, db, createUserWithEmailAndPassword, doc, setDoc } from "./js/firebase-config.js";
 
   document.addEventListener("DOMContentLoaded", function() {
     const birthDateInput = document.getElementById('birthDate');
@@ -155,29 +153,29 @@
 
       // Firebase Authentication ile kullanıcı ekle (şifre olarak tcNo kullanılıyor)
       createUserWithEmailAndPassword(auth, email, tcNo)
-        .then((cred) => {
-          // Kullanıcı oluşturulduktan sonra ek bilgileri Firestore'a kaydet
-          return db.collection("users").doc(cred.user.uid).set({
-            email: email,
-            tcNo: tcNo,
-            fullname: fullname,
-            birthPlace: birthPlace,
-            birthDate: birthDateStr,
-            educationLevel: educationLevel,
-            schoolName: schoolName,
-            phone: phone,
-            address: address,
-            role: "member"
+          .then((cred) => {
+            // Kullanıcı oluşturulduktan sonra ek bilgileri Firestore'a kaydet
+            return setDoc(doc(db, "users", cred.user.uid), {
+              email: email,
+              tcNo: tcNo,
+              fullname: fullname,
+              birthPlace: birthPlace,
+              birthDate: birthDateStr,
+              educationLevel: educationLevel,
+              schoolName: schoolName,
+              phone: phone,
+              address: address,
+              role: "member"
+            });
+          })
+          .then(() => {
+            signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
+            signupForm.reset();
+            ageMessage.innerText = "";
+          })
+          .catch((error) => {
+            signupMessage.innerText = "Hata: " + error.message;
           });
-        })
-        .then(() => {
-          signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
-          signupForm.reset();
-          ageMessage.innerText = "";
-        })
-        .catch((error) => {
-          signupMessage.innerText = "Hata: " + error.message;
-        });
     });
   });
 </script>
