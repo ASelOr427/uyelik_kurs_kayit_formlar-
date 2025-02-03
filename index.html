@@ -39,9 +39,11 @@
         <label for="birthPlace">Doğum Yeriniz <span class="optional">(Opsiyonel)</span></label>
         <input type="text" id="birthPlace" placeholder="Doğum Yeriniz">
       </div>
-      <!-- Doğum Tarihi -->
+      <!-- Doğum Tarihi ve Yaş Uyarısı -->
       <div class="form-group">
         <label for="birthDate">Doğum Tarihiniz</label>
+        <!-- Yaş uyarısı mesajı burada gösterilecek -->
+        <div id="age-message" style="color: red; font-size: 0.9rem; margin-bottom: 5px;"></div>
         <input type="date" id="birthDate" required>
       </div>
       <!-- Öğrenim Durumu (Açılır Liste) -->
@@ -95,30 +97,41 @@
     <div id="signup-message"></div>
   </div>
 
-  <!-- Geçiş/Animasyon ve Kayıt İşlemi Scriptleri -->
   <script>
-    // 18 yaş altı kontrolü (Doğum tarihine göre)
-    document.getElementById('birthDate').addEventListener('change', function() {
-      const birthDate = new Date(this.value);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      const guardianApproval = document.getElementById('guardian-approval');
-      if(age < 18) {
-        guardianApproval.classList.remove('hidden');
-      } else {
-        guardianApproval.classList.add('hidden');
-      }
-    });
+    // Tüm kodun DOM yüklendikten sonra çalışması için
+    document.addEventListener("DOMContentLoaded", function() {
+      const birthDateInput = document.getElementById('birthDate');
+      const ageMessage = document.getElementById('age-message');
+      const signupForm = document.getElementById("signup-form");
+      const signupMessage = document.getElementById("signup-message");
 
-    // Kayıt işlemi
-    const signupForm = document.getElementById("signup-form");
-    const signupMessage = document.getElementById("signup-message");
+      // Fonksiyon: Yaşı hesapla
+      function calculateAge(birthDateStr) {
+        const birthDate = new Date(birthDateStr);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
 
-    if (signupForm) {
+      // Doğum tarihi değiştiğinde yaş hesaplamasını yap ve uyarıyı güncelle
+      birthDateInput.addEventListener('input', function() {
+        const age = calculateAge(this.value);
+        if (this.value === "") {
+          ageMessage.innerText = "";
+          return;
+        }
+        if (age < 7 || age > 29) {
+          ageMessage.innerText = "Yaşınız 7 ila 29 arasında olmalıdır.";
+        } else {
+          ageMessage.innerText = "";
+        }
+      });
+
+      // Kayıt formu gönderim işlemi
       signupForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
@@ -127,22 +140,14 @@
         const tcNo = document.getElementById("tcNo").value; // Şifre olarak kullanılacak
         const fullname = document.getElementById("fullname").value;
         const birthPlace = document.getElementById("birthPlace").value;
-        const birthDateStr = document.getElementById("birthDate").value;
+        const birthDateStr = birthDateInput.value;
         const educationLevel = document.getElementById("educationLevel").value;
         const schoolName = document.getElementById("schoolName").value;
         const phone = document.getElementById("phone").value;
         const address = document.getElementById("address").value;
 
         // Yaş hesaplama
-        const birthDate = new Date(birthDateStr);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-
-        // Yaş koşulu: 7 ile 29 (her iki uç dahil)
+        const age = calculateAge(birthDateStr);
         if (age < 7 || age > 29) {
           signupMessage.innerText = "Kayıt olabilmek için yaşınız 7 ile 29 arasında olmalıdır.";
           return;
@@ -168,12 +173,13 @@
           .then(() => {
             signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
             signupForm.reset();
+            ageMessage.innerText = "";
           })
           .catch((error) => {
             signupMessage.innerText = "Hata: " + error.message;
           });
       });
-    }
+    });
   </script>
 </body>
 </html>
