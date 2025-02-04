@@ -27,9 +27,7 @@
     <p><a href="login.html">Zaten üye misiniz? Giriş Yapın</a></p>
   </div>
   <script type="module">
-    import { auth, db, createUserWithEmailAndPassword } from "./js/firebase-config.js";
-    import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
-
+    import { auth, db, createUserWithEmailAndPassword, collection, query, where, getDocs } from "./js/firebase-config.js";
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("register1-form");
       const messageDiv = document.getElementById("register1-message");
