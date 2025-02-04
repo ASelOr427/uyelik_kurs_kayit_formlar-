@@ -1,7 +1,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js';
-  import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js';
+  import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js';
   import { getDatabase} from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
   // Your web app's Firebase configuration
@@ -25,7 +25,9 @@
   auth, 
   db, 
   database, 
-  firebaseCreateUserWithEmailAndPassword as createUserWithEmailAndPassword, 
+  firebaseCreateUserWithEmailAndPassword as createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
   doc, 
-  setDoc 
+  setDoc,
+  getDoc
 };
