@@ -1,183 +1,67 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Üyelik Başvurusu</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Üye Girişi</title>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- CSS Dosyası -->
-  <link rel="stylesheet" href="css/styles.css">
-  <!-- Firebase yapılandırma (firebase-config.js) -->
-  <script type="module" src="js/firebase-config.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="container fade-in">
-    <h1>Gençlik Merkezi Üyelik Başvurusu</h1>
-    <form id="signup-form">
-      <!-- E-posta -->
+    <h1>Üye Girişi</h1>
+    <form id="login-form">
       <div class="form-group">
-        <label for="email">E-posta Adresiniz</label>
-        <input type="email" id="email" placeholder="ornek@domain.com" required>
-      </div>
-      <!-- T.C. Kimlik Numarası -->
-      <div class="form-group">
-        <label for="tcNo">T.C. Kimlik Numarası</label>
-        <input type="text" id="tcNo" placeholder="TC Kimlik Numaranız" required>
-      </div>
-      <!-- Adınız Soyadınız -->
-      <div class="form-group">
-        <label for="fullname">Adınız Soyadınız</label>
-        <input type="text" id="fullname" placeholder="Adınız Soyadınız" required>
-      </div>
-      <!-- Doğum Yeri (Opsiyonel) -->
-      <div class="form-group">
-        <label for="birthPlace">Doğum Yeriniz <span class="optional">(Opsiyonel)</span></label>
-        <input type="text" id="birthPlace" placeholder="Doğum Yeriniz">
-      </div>
-      <!-- Doğum Tarihi ve Yaş Uyarısı -->
-      <div class="form-group">
-        <label for="birthDate">Doğum Tarihiniz</label>
-        <!-- Yaş uyarısı mesajı burada gösterilecek -->
-        <div id="age-message" style="color: red; font-size: 0.9rem; margin-bottom: 5px;"></div>
-        <input type="date" id="birthDate" required>
-      </div>
-      <!-- Öğrenim Durumu (Açılır Liste) -->
-      <div class="form-group">
-        <label for="educationLevel">Öğrenim Durumunuz</label>
-        <select id="educationLevel" required>
-          <option value="" disabled selected>Seçiniz</option>
-          <option value="ilkogretim">İlköğretim</option>
-          <option value="lise">Lise</option>
-          <option value="universite">Üniversite</option>
-        </select>
-      </div>
-      <!-- Okul Adı (Opsiyonel) -->
-      <div class="form-group">
-        <label for="schoolName">Okulun Adı <span class="optional">(Opsiyonel)</span></label>
-        <input type="text" id="schoolName" placeholder="Okulunuzun adı">
-      </div>
-      <!-- Cep Telefonu -->
-      <div class="form-group">
-        <label for="phone">Cep Telefonunuz</label>
-        <input type="tel" id="phone" placeholder="5xx xxx xx xx" required>
-      </div>
-      <!-- İkametgah Adresi (Opsiyonel) -->
-      <div class="form-group">
-        <label for="address">İkametgah Adresiniz <span class="optional">(Opsiyonel)</span></label>
-        <input type="text" id="address" placeholder="Adresiniz">
-      </div>
-      <!-- 18 Yaş Altı İçin Veli Onay -->
-      <div id="guardian-approval" class="form-group hidden">
-        <label>
-          <input type="checkbox" id="guardianConsent">
-          Veli Onayı ve E-İmza (18 yaş altı için zorunludur)
-        </label>
-      </div>
-      <!-- KVKK Onayları -->
-      <div class="form-group">
-        <label>
-          <input type="checkbox" id="kvkkConsent" required>
-          KVKK Aydınlatma Metni'ni okudum, <a href="#" target="_blank">detaylar</a> ile onaylıyorum.
-        </label>
+        <label for="login-email">E-posta Adresiniz</label>
+        <input type="email" id="login-email" placeholder="ornek@domain.com" required />
       </div>
       <div class="form-group">
-        <label>
-          <input type="checkbox" id="kvkkApproval" required>
-          KVKK Açık Rıza Beyanını kabul ediyorum.
-        </label>
+        <label for="login-tc">T.C. Kimlik Numarası</label>
+        <input type="text" id="login-tc" placeholder="TC Kimlik Numaranız" required />
       </div>
-      <button type="submit" class="btn">Kayıt Ol</button>
+      <button type="submit" class="btn">Giriş Yap</button>
     </form>
-    <p class="login-link">Zaten üye misiniz? <a href="login.html">Giriş Yapın</a></p>
-    <div id="signup-message"></div>
+    <div id="login-message"></div>
+    <p class="signup-link">Henüz üye değil misiniz? <a href="register1.html">Kayıt Olun</a></p>
   </div>
-
   <script type="module">
-  // Firebase yapılandırma dosyasından auth ve db'yi içe aktar
-  import { auth, db, createUserWithEmailAndPassword, doc, setDoc } from "./js/firebase-config.js";
-
-  document.addEventListener("DOMContentLoaded", function() {
-    const birthDateInput = document.getElementById('birthDate');
-    const ageMessage = document.getElementById('age-message');
-    const signupForm = document.getElementById("signup-form");
-    const signupMessage = document.getElementById("signup-message");
-
-    // Fonksiyon: Yaşı hesapla
-    function calculateAge(birthDateStr) {
-      const birthDate = new Date(birthDateStr);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age;
-    }
-
-    // Doğum tarihi değiştiğinde yaş hesaplamasını yap ve uyarıyı güncelle
-    birthDateInput.addEventListener('input', function() {
-      const age = calculateAge(this.value);
-      if (this.value === "") {
-        ageMessage.innerText = "";
-        return;
-      }
-      if (age < 7 || age > 29) {
-        ageMessage.innerText = "Yaşınız 7 ila 29 arasında olmalıdır.";
-      } else {
-        ageMessage.innerText = "";
-      }
-    });
-
-    // Kayıt formu gönderim işlemi
-    signupForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      // Form verilerini al
-      const email = document.getElementById("email").value;
-      const tcNo = document.getElementById("tcNo").value; // Şifre olarak kullanılacak
-      const fullname = document.getElementById("fullname").value;
-      const birthPlace = document.getElementById("birthPlace").value;
-      const birthDateStr = birthDateInput.value;
-      const educationLevel = document.getElementById("educationLevel").value;
-      const schoolName = document.getElementById("schoolName").value;
-      const phone = document.getElementById("phone").value;
-      const address = document.getElementById("address").value;
-
-      // Yaş hesaplama
-      const age = calculateAge(birthDateStr);
-      if (age < 7 || age > 29) {
-        signupMessage.innerText = "Kayıt olabilmek için yaşınız 7 ile 29 arasında olmalıdır.";
-        return;
-      }
-
-      // Firebase Authentication ile kullanıcı ekle (şifre olarak tcNo kullanılıyor)
-      createUserWithEmailAndPassword(auth, email, tcNo)
+    import { auth, db } from "./js/firebase-config.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("login-form");
+      const loginMessage = document.getElementById("login-message");
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("login-email").value.trim();
+        const tc = document.getElementById("login-tc").value.trim();
+        // Giriş için Auth üzerinden işlemi gerçekleştiriyoruz (şifre olarak tc kullanıyoruz)
+        signInWithEmailAndPassword(auth, email, tc)
           .then((cred) => {
-            // Kullanıcı oluşturulduktan sonra ek bilgileri Firestore'a kaydet
-            return setDoc(doc(db, "users", cred.user.uid), {
-              email: email,
-              tcNo: tcNo,
-              fullname: fullname,
-              birthPlace: birthPlace,
-              birthDate: birthDateStr,
-              educationLevel: educationLevel,
-              schoolName: schoolName,
-              phone: phone,
-              address: address,
-              role: "member"
-            });
-          })
-          .then(() => {
-            signupMessage.innerText = "Kayıt başarılı! Giriş yapabilirsiniz.";
-            signupForm.reset();
-            ageMessage.innerText = "";
+            // Giriş başarılı, şimdi Firestore'dan kullanıcının rolünü kontrol edelim.
+            getDoc(doc(db, "members", cred.user.uid))
+              .then((docSnap) => {
+                if (docSnap.exists() && docSnap.data().role === "member") {
+                  loginMessage.innerText = "Giriş başarılı! Yönlendiriliyorsunuz...";
+                  setTimeout(() => {
+                    window.location.href = "course-apply.html";  // Üyeler için kurs başvuru ekranı
+                  }, 1500);
+                } else {
+                  loginMessage.innerText = "Giriş yetkiniz bulunmamaktadır.";
+                  auth.signOut();
+                }
+              })
+              .catch((error) => {
+                loginMessage.innerText = "Hata: " + error.message;
+              });
           })
           .catch((error) => {
-            signupMessage.innerText = "Hata: " + error.message;
+            loginMessage.innerText = "Hata: " + error.message;
           });
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
