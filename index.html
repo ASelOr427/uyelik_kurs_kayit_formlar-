@@ -120,6 +120,9 @@
               });
           })
           .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode,errorMessage);
             // Hata koduna göre mesajları belirleyelim.
             let message = "Giriş başarısız, tekrar deneyin.";
             let linkHtml = "";
