@@ -124,8 +124,7 @@
             const errorMessage = error.message;
             console.log(errorCode,errorMessage);
             // Hata koduna göre mesajları belirleyelim.
-            let message = "Giriş başarısız, tekrar deneyin.";
-            let linkHtml = "";
+            
             if (error.code === "auth/user-not-found") {
               message = "Giriş Yapabilmek için önce üye olmalısınız.";
               // Giriş formunda girilen e-posta ve TC bilgisini URL parametresi olarak gönderelim.
@@ -134,7 +133,11 @@
               linkHtml = `<a href="register1.html?email=${emailParam}&tc=${tcParam}">Gençlik Merkezine Üye Ol</a>`;
             } else if (error.code === "auth/wrong-password") {
               message = "Hatalı e-posta ya da T.C. kimlik numarası.";
-            }
+            }  
+              else if () {
+                let message = "Giriş başarısız, tekrar deneyin.";
+                let linkHtml = "";
+              }
             showModal(message, linkHtml);
           });
       });
