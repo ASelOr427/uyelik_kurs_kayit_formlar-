@@ -24,7 +24,7 @@
       <button type="submit" class="btn">Devam Et</button>
     </form>
     <div id="register1-message"></div>
-    <p><a href="login.html">Zaten üye misiniz? Giriş Yapın</a></p>
+    <p><a href="index.html">Zaten üye misiniz? Giriş Yapın</a></p>
   </div>
   <script type="module">
     import { auth, db, createUserWithEmailAndPassword, collection, query, where, getDocs } from "./js/firebase-config.js";
@@ -42,7 +42,7 @@
         if (!querySnapshot.empty) {
           alert("Üye olduğunuz için tekrar üye olamazsınız.");
           setTimeout(() => {
-            window.location.href = "login.html";
+            window.location.href = "index.html";
           }, 5000);
           return;
         }
