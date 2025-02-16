@@ -111,8 +111,8 @@
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
-            message = "Giriş başarısız, tekrar deneyin.";
-            linkHtml = "";
+            const message = "Giriş başarısız, tekrar deneyin.";
+            const linkHtml = "";
             showModal(message, linkHtml);
           });
       });
