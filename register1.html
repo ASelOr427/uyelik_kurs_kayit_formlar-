@@ -80,7 +80,7 @@
         .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        const message = errorCode,"",errorMessage;
+        const message = errorCode+errorMessage;
         console.log(message);
         showModal(message, "");
         // ..
