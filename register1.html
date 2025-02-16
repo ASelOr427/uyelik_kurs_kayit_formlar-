@@ -23,6 +23,9 @@
       </div>
       <button type="submit" class="btn">Devam Et</button>
     </form>
+    </form>
+    <p class="signup-link">Zaten üye misiniz? <a href="index.html">Giriş yapın</a></p>
+  </div>
      <div id="error-modal" class="modal">
     <div class="modal-content">
       <span id="close-modal" class="close-modal">&times;</span>
@@ -30,6 +33,7 @@
       <div id="modal-link-container"></div>
     </div>
   </div>
+    
   <script type="module">
     import { auth, db, createUserWithEmailAndPassword, collection, query, where, getDocs } from "./js/firebase-config.js";
     document.addEventListener("DOMContentLoaded", () => {
