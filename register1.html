@@ -39,6 +39,9 @@
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("register1-form");
       const errorModal = document.getElementById("error-modal");
+      const errorMessageElem = document.getElementById("error-message");
+      const modalLinkContainer = document.getElementById("modal-link-container");
+      const closeModalBtn = document.getElementById("close-modal");
 
       closeModalBtn.onclick = function() {
         errorModal.style.display = "none";
