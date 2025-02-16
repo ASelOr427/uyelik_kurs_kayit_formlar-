@@ -9,9 +9,9 @@
   <!-- CSS Dosyası -->
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    /* Modal Stili */
+    /* Modal Stili (Daha önce eklediğiniz stiller) */
     .modal {
-      display: none; /* Başlangıçta gizli */
+      display: none;
       position: fixed;
       z-index: 1000;
       left: 0;
@@ -56,11 +56,30 @@
     <form id="login-form">
       <div class="form-group">
         <label for="login-email">E-posta Adresiniz</label>
-        <input type="email" id="login-email" placeholder="ornek@domain.com" required />
+        <!-- HTML5 doğrulama: type="email" -->
+        <input 
+          type="email" 
+          id="login-email" 
+          placeholder="ornek@domain.com" 
+          required
+        />
       </div>
       <div class="form-group">
         <label for="login-tc">T.C. Kimlik Numarası</label>
-        <input type="text" id="login-tc" placeholder="TC Kimlik Numaranız" required />
+        <!-- 
+          - pattern="^[0-9]{11}$": Sadece 11 haneli rakamları kabul eder.
+          - maxlength="11": Kullanıcı 11 haneden fazla giremez.
+          - inputmode="numeric": Mobil klavyede rakamların gelmesini kolaylaştırır (özellikle mobil cihazlarda).
+        -->
+        <input 
+          type="text" 
+          id="login-tc" 
+          placeholder="11 haneli T.C. Kimlik Numaranız" 
+          pattern="^[0-9]{11}$" 
+          maxlength="11" 
+          inputmode="numeric" 
+          required
+        />
       </div>
       <button type="submit" class="btn">Giriş Yap</button>
     </form>
@@ -96,11 +115,20 @@
         }
       }
 
+      // Form gönderiminde ek kontrol (örneğin, T.C. kimlik alanı 11 hane mi diye JS tarafında da bakabilirsiniz)
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
+
         const email = document.getElementById("login-email").value.trim();
         const tc = document.getElementById("login-tc").value.trim();
 
+        // Ek JavaScript doğrulama (örnek):
+        if (tc.length !== 11 || !/^\d{11}$/.test(tc)) {
+          showModal("T.C. Kimlik Numarası 11 haneli olmalıdır.", "");
+          return;
+        }
+
+        // Firebase Auth işlemi
         signInWithEmailAndPassword(auth, email, tc)
           .then((cred) => {
             // Giriş başarılı, şimdi Firestore'dan kullanıcının rolünü kontrol edelim.
@@ -122,28 +150,24 @@
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode,errorMessage);
-            // Hata koduna göre mesajları belirleyelim.
+            console.log(errorCode, errorMessage);
             let message = "";
             let linkHtml = "";
-            if (error.code === "auth/user-not-found") {
+            if (errorCode === "auth/user-not-found") {
               message = "Giriş Yapabilmek için önce üye olmalısınız.";
-              // Giriş formunda girilen e-posta ve TC bilgisini URL parametresi olarak gönderelim.
               const emailParam = encodeURIComponent(email);
               const tcParam = encodeURIComponent(tc);
               linkHtml = `<a href="register1.html?email=${emailParam}&tc=${tcParam}">Gençlik Merkezine Üye Ol</a>`;
-            } else if (error.code === "auth/wrong-password") {
+            } else if (errorCode === "auth/wrong-password") {
               message = "Hatalı e-posta ya da T.C. kimlik numarası.";
-            }  
-              else {
-                message = "Giriş başarısız, tekrar deneyin.";
-                linkHtml = "";
-              }
+            } else {
+              message = "Giriş başarısız, tekrar deneyin.";
+              linkHtml = "";
+            }
             showModal(message, linkHtml);
           });
       });
 
-      // Modal gösterim fonksiyonu
       function showModal(message, linkHtml) {
         errorMessageElem.innerText = message;
         modalLinkContainer.innerHTML = linkHtml || "";
