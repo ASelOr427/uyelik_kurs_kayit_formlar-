@@ -48,16 +48,22 @@
         }
 
         // Kayıt: Firebase Auth'a kullanıcı ekle (şifre olarak tc numarası kullanılıyor)
-        try {
-          const cred = await createUserWithEmailAndPassword(auth, email, tc);
-          // Başarılıysa bilgileri localStorage'a kaydedelim
-          localStorage.setItem("regEmail", email);
-          localStorage.setItem("regTc", tc);
-          // Kayıt Adım 2 sayfasına yönlendir
-          window.location.href = "register2.html";
-        } catch (error) {
-          messageDiv.innerText = "Hata: " + error.message;
-        }
+        createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+        // Signed up 
+        const user = userCredential.user;
+        localStorage.setItem("regEmail", email);
+        localStorage.setItem("regTc", tc);
+        // Kayıt Adım 2 sayfasına yönlendir
+        window.location.href = "register2.html";
+        // ...
+        })
+        .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        messageDiv.innerText = error.code,error.message;
+        // ..
+        });
       });
     });
   </script>
