@@ -23,14 +23,28 @@
       </div>
       <button type="submit" class="btn">Devam Et</button>
     </form>
-    <div id="register1-message"></div>
-    <p><a href="index.html">Zaten üye misiniz? Giriş Yapın</a></p>
+     <div id="error-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close-modal">&times;</span>
+      <p id="error-message"></p>
+      <div id="modal-link-container"></div>
+    </div>
   </div>
   <script type="module">
     import { auth, db, createUserWithEmailAndPassword, collection, query, where, getDocs } from "./js/firebase-config.js";
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("register1-form");
-      const messageDiv = document.getElementById("register1-message");
+      const errorModal = document.getElementById("error-modal");
+
+      closeModalBtn.onclick = function() {
+        errorModal.style.display = "none";
+      }
+      window.onclick = function(event) {
+        if (event.target == errorModal) {
+          errorModal.style.display = "none";
+        }
+      }
+      
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = document.getElementById("reg-email").value.trim();
@@ -40,11 +54,9 @@
         const q = query(collection(db, "members"), where("tcNo", "==", tc));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          alert("Üye olduğunuz için tekrar üye olamazsınız.");
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 5000);
-          return;
+          message = "Üye olduğunuz için tekrar üye olamazsınız.");
+          linkHtml = `<a href="index.html?">Giriş yapmak için tıklayın</a>`;
+          showModal(message, linkHtml);
         }
 
         // Kayıt: Firebase Auth'a kullanıcı ekle (şifre olarak tc numarası kullanılıyor)
@@ -61,10 +73,18 @@
         .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        messageDiv.innerText = error.code,error.message;
+        message = errorCode,errorMessage;
+        console.log(message);
+        showModal(message, "");
         // ..
         });
       });
+      
+      function showModal(message, linkHtml) {
+        errorMessageElem.innerText = message;
+        modalLinkContainer.innerHTML = linkHtml || "";
+        errorModal.style.display = "block";
+      }
     });
   </script>
 </body>
