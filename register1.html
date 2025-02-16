@@ -54,7 +54,7 @@
         const q = query(collection(db, "members"), where("tcNo", "==", tc));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          message = "Üye olduğunuz için tekrar üye olamazsınız.");
+          message = "Üye olduğunuz için tekrar üye olamazsınız.";
           linkHtml = `<a href="index.html?">Giriş yapmak için tıklayın</a>`;
           showModal(message, linkHtml);
         }
