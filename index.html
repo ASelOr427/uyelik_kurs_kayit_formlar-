@@ -130,9 +130,10 @@
 
         // Firebase Auth işlemi
         signInWithEmailAndPassword(auth, email, tc)
-          .then((cred) => {
+          .then((userCredential) => {
+            const kullanıcı = userCredential.user;
             // Giriş başarılı, şimdi Firestore'dan kullanıcının rolünü kontrol edelim.
-            getDoc(doc(db, "members", cred.user.uid))
+            getDoc(doc(db, "members", kullanıcı.uid))
               .then((docSnap) => {
                 if (docSnap.exists() && docSnap.data().role === "member") {
                   // Başarılı ise üyeler için kurs başvuru ekranına yönlendir.
