@@ -111,19 +111,8 @@
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
-            let message = "";
-            let linkHtml = "";
-            if (errorCode === "auth/user-not-found") {
-              message = "Giriş Yapabilmek için önce üye olmalısınız.";
-              const emailParam = encodeURIComponent(email);
-              const tcParam = encodeURIComponent(tc);
-              linkHtml = `<a href="register1.html?email=${emailParam}&tc=${tcParam}">Gençlik Merkezine Üye Ol</a>`;
-            } else if (errorCode === "auth/wrong-password") {
-              message = "Hatalı e-posta ya da T.C. kimlik numarası.";
-            } else {
-              message = "Giriş başarısız, tekrar deneyin.";
-              linkHtml = "";
-            }
+            message = "Giriş başarısız, tekrar deneyin.";
+            linkHtml = "";
             showModal(message, linkHtml);
           });
       });
