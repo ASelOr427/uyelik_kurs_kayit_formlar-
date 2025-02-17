@@ -96,7 +96,7 @@
               .then((docSnap) => {
                 if (docSnap.exists() && docSnap.data().role === "member") {
                   // Başarılı ise üyeler için kurs başvuru ekranına yönlendir.
-                  window.location.href = "course-apply.html";
+                  window.location.href = "member-dashboard.html";
                 } else {
                   // Eğer rol uyuşmuyorsa, çıkış yap ve hata göster.
                   auth.signOut();
