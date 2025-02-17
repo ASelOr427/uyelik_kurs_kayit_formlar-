@@ -1,70 +1,194 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Kurs Başvurusu</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/courses.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Üye Paneli</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <!-- Stil -->
+  <style>
+    /* Genel stil ayarları */
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: #f7f7f7;
+    }
+    /* Sol menü (sidebar) */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 250px;
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 200;
+    }
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    .sidebar h2 {
+      margin-top: 0;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin: 15px 0;
+    }
+    .sidebar ul li a {
+      color: #fff;
+      text-decoration: none;
+    }
+    /* Üst header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 150;
+    }
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    /* Profil butonu ve dropdown */
+    .profile {
+      position: relative;
+      display: inline-block;
+    }
+    .profile-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      z-index: 300;
+    }
+    .profile-dropdown a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #333;
+    }
+    .profile-dropdown a:hover {
+      background-color: #f0f0f0;
+    }
+    .profile.active .profile-dropdown {
+      display: block;
+    }
+    /* Ana içerik */
+    .content {
+      margin-top: 60px; /* header yüksekliği */
+      padding: 20px;
+      width: 100%;
+      transition: margin-left 0.3s ease;
+    }
+    .content.shifted {
+      margin-left: 250px;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      .content.shifted {
+        margin-left: 200px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Kurs Başvuruları</h1>
-  <div id="courses-list">
-    <!-- Kurslar listelenecek -->
+  <!-- Sol menü (Sidebar) -->
+  <div id="sidebar" class="sidebar">
+    <h2>Menü</h2>
+    <ul>
+      <li><a href="#">Kurslar</a></li>
+      <li><a href="#">Faaliyetler</a></li>
+      <!-- İhtiyaç duyduğunuz diğer seçenekler -->
+    </ul>
   </div>
-  <h2>Kursa Başvur</h2>
-  <form id="course-apply-form">
-    <label>Kurs Seçin:
-      <select id="selected-course" required>
-        <!-- Kurslar dropdown'a eklenecek -->
-      </select>
-    </label><br>
-    <button type="submit">Başvur</button>
-  </form>
-  <div id="apply-message"></div>
-  <script>
-    // Kurs listesini dropdown'a eklemek ve başvuru işlemleri
-    const courseApplyForm = document.getElementById("course-apply-form");
-    const selectedCourse = document.getElementById("selected-course");
-    const applyMessage = document.getElementById("apply-message");
 
-    // Kursları Firestore’dan çek ve dropdown'ı doldur
-    db.collection("courses").orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
-        selectedCourse.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const course = doc.data();
-          const option = document.createElement("option");
-          option.value = doc.id;
-          option.text = course.name;
-          selectedCourse.appendChild(option);
-        });
-      });
+  <!-- Üst Header -->
+  <div class="header">
+    <span id="hamburger" class="hamburger">&#9776;</span>
+    <div class="profile" id="profile">
+      <button class="profile-btn">Profil</button>
+      <div class="profile-dropdown">
+        <a href="profile.html">Profili Düzenle</a>
+        <a href="#" id="signOutBtn">Çıkış Yap</a>
+      </div>
+    </div>
+  </div>
 
-    // Kurs başvuru işlemi
-    courseApplyForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      // Giriş yapmış kullanıcı bilgisini al (kullanıcı kimliği: uid)
-      const user = firebase.auth().currentUser;
+  <!-- Ana İçerik -->
+  <div id="content" class="content">
+    <h1>Keçiören Gençlik Merkezi Dijital Platformuna Hoşgeldiniz</h1>
+    <!-- Buraya kullanıcıya özel içerikler ekleyebilirsiniz -->
+  </div>
+
+  <!-- Firebase ve Sayfa Kontrolü Scriptleri -->
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+    import { auth } from "./js/firebase-config.js";
+    
+    // Oturum kontrolü: Eğer kullanıcı giriş yapmamışsa, login sayfasına yönlendir.
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
-        applyMessage.innerText = "Lütfen giriş yapın.";
-        return;
+        window.location.href = "login.html";
+      } else {
+        console.log("Giriş yapan kullanıcı UID:", user.uid);
+        // İsterseniz burada token veya diğer kullanıcı verilerini de çekebilirsiniz.
       }
-      const courseId = selectedCourse.value;
-      // Başvuruyu Firestore’da "applications" koleksiyonuna ekle
-      db.collection("applications").add({
-        userId: user.uid,
-        courseId: courseId,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        applyMessage.innerText = "Kursa başvurunuz alındı!";
-      })
-      .catch((error) => {
-        applyMessage.innerText = "Hata: " + error.message;
+    });
+
+    // Sidebar açma/kapama işlevi
+    const hamburger = document.getElementById("hamburger");
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("content");
+
+    hamburger.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+      content.classList.toggle("shifted");
+    });
+
+    // Profil dropdown açma/kapama işlevi
+    const profile = document.getElementById("profile");
+    profile.addEventListener("click", () => {
+      profile.classList.toggle("active");
+    });
+
+    // Çıkış yapma işlevi
+    const signOutBtn = document.getElementById("signOutBtn");
+    signOutBtn.addEventListener("click", () => {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      }).catch((error) => {
+        console.error("Çıkış yapma hatası:", error);
       });
     });
   </script>
