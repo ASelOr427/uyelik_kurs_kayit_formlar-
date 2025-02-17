@@ -67,7 +67,7 @@
         }
 
         // Kayıt: Firebase Auth'a kullanıcı ekle (şifre olarak tc numarası kullanılıyor)
-        createUserWithEmailAndPassword(auth, email, password)
+        createUserWithEmailAndPassword(auth, email, tc)
         .then((userCredential) => {
         // Signed up 
         const user = userCredential.user;
