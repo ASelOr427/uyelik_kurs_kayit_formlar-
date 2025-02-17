@@ -56,8 +56,13 @@
 
   <script type="module">
     import { auth, db, signInWithEmailAndPassword, doc, getDoc,onAuthStateChanged } from "./js/firebase-config.js";
-
-    document.addEventListener("DOMContentLoaded", () => {
+     
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "member-dashboard.html";
+      } else {
+        
+        document.addEventListener("DOMContentLoaded", () => {
       const loginForm = document.getElementById("login-form");
       const errorModal = document.getElementById("error-modal");
       const errorMessageElem = document.getElementById("error-message");
@@ -121,6 +126,8 @@
         errorMessageElem.innerText = message;
         modalLinkContainer.innerHTML = linkHtml || "";
         errorModal.style.display = "block";
+         }
+       })
       }
     });
   </script>
