@@ -153,8 +153,7 @@
 
   <!-- Firebase ve Sayfa Kontrolü Scriptleri -->
   <script type="module">
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-    import { auth } from "./js/firebase-config.js";
+    import { getAuth,signOut,auth,onAuthStateChanged } from "./js/firebase-config.js";
     
     // Oturum kontrolü: Eğer kullanıcı giriş yapmamışsa, login sayfasına yönlendir.
     onAuthStateChanged(auth, (user) => {
