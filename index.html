@@ -62,7 +62,8 @@
         window.location.href = "member-dashboard.html";
         console.log("naber");
       } else {
-        
+        console.log("giriş yapmış kullanıcı yok");
+        }
         document.addEventListener("DOMContentLoaded", () => {
           console.log("giriş yapmış kullanıcı yok1");
           const loginForm = document.getElementById("login-form");
@@ -131,7 +132,6 @@
           errorModal.style.display = "block";
           }
        })
-      }
     });
   </script>
 </body>
