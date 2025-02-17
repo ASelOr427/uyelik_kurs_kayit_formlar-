@@ -55,7 +55,7 @@
   </div>
 
   <script type="module">
-    import { auth, db, signInWithEmailAndPassword, doc, getDoc } from "./js/firebase-config.js";
+    import { auth, db, signInWithEmailAndPassword, doc, getDoc,onAuthStateChanged } from "./js/firebase-config.js";
 
     document.addEventListener("DOMContentLoaded", () => {
       const loginForm = document.getElementById("login-form");
