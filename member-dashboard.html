@@ -163,28 +163,28 @@
       } else {
         console.log("Giriş yapan kullanıcı UID:", user.uid);
         // Sidebar açma/kapama işlevi
-    const hamburger = document.getElementById("hamburger");
-    const sidebar = document.getElementById("sidebar");
-    const content = document.getElementById("content");
+        const hamburger = document.getElementById("hamburger");
+        const sidebar = document.getElementById("sidebar");
+        const content = document.getElementById("content");
 
-    hamburger.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-      content.classList.toggle("shifted");
-    });
+        hamburger.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        content.classList.toggle("shifted");
+        });
 
-    // Profil dropdown açma/kapama işlevi
-    const profile = document.getElementById("profile");
-    profile.addEventListener("click", () => {
-      profile.classList.toggle("active");
-    });
+        // Profil dropdown açma/kapama işlevi
+        const profile = document.getElementById("profile");
+        profile.addEventListener("click", () => {
+        profile.classList.toggle("active");
+        });
 
-    // Çıkış yapma işlevi
-    const signOutBtn = document.getElementById("signOutBtn");
-    signOutBtn.addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      }).catch((error) => {
-        console.error("Çıkış yapma hatası:", error);
+        // Çıkış yapma işlevi
+        const signOutBtn = document.getElementById("signOutBtn");
+        signOutBtn.addEventListener("click", () => {
+          signOut(auth).then(() => {
+            window.location.href = "index.html";
+          }).catch((error) => {
+          console.error("Çıkış yapma hatası:", error);
         });
        }); // İsterseniz burada token veya diğer kullanıcı verilerini de çekebilirsiniz.
       }
